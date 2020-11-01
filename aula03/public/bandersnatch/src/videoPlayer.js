@@ -62,6 +62,19 @@ class VideoMediaPlayer {
     this.videoComponent.configureModal(this.selected.options);
   }
 
+  async currentFileResolution() {
+    const LOWEST_RESOLUTION = 144;
+    const prepareUrl = {
+      url: this.manifestJSON.finalizar.url,
+      fileResolution: LOWEST_RESOLUTION,
+      fileResolutionTag: this.manifestJSON.fileResolutionTag,
+      hostTag: this.manifestJSON.hostTag,
+    };
+
+    const url = this.network.parseManifestURL(prepareUrl);
+    return this.network.getProperResolution(url);
+  }
+
   async nextChunk(data) {
     const key = data.toLowerCase();
     const selected = this.manifestJSON[key];
@@ -78,9 +91,11 @@ class VideoMediaPlayer {
   }
 
   async fileDownload(url) {
+    const fileResolution = await this.network.getProperResolution();
+
     const prepareUrl = {
       url,
-      fileResolution: 360,
+      fileResolution: fileResolution,
       fileResolutionTag: this.manifestJSON.fileResolutionTag,
       hostTag: this.manifestJSON.hostTag,
     };
@@ -95,6 +110,7 @@ class VideoMediaPlayer {
     const [name, videoDuration] = bars[bars.length - 1].split('-');
     this.videoDuration += parseFloat(videoDuration);
   }
+
   async processBufferSegments(allSegments) {
     const sourceBuffer = this.sourceBuffer;
     sourceBuffer.appendBuffer(allSegments);
