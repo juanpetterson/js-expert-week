@@ -1,0 +1,6 @@
+component: website
+name: bansersnatch-website
+stage: dev
+inputs:
+  src:
+    src: .
